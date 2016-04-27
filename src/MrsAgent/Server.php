@@ -110,6 +110,17 @@ class Server extends Base {
 
     private function _cmdExecute($fd, $req) {
 
+        if (!isset($req['script'])) {
+            return $this->response($fd, 500, 'Require shell script file');
+        }
+
+        // 清除stat缓存
+        clearstatcache();
+        if (!is_file($req['script'])) {
+            return $this->response($fd, 404, 'shell script ' . $req['script'] . ' not found.');
+        }
+
+        // 只允许执行指定目录的script todo
     }
 
     /**
