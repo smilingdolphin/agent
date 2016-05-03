@@ -121,6 +121,21 @@ class Server extends Base {
         }
 
         // 只允许执行指定目录的script todo
+        if (!isset($req['args'])) {
+            $req['args'] = array();
+        }
+
+        // 规定shell脚本里返回json数据
+        $result = shell_exec($req['script'] . ' ' . implode(' ', $req['args']));
+        if ($result)  {
+            $result = json_decode($result, true);
+        }
+
+        if ($result['code'] == 0) {
+            $this->response($fd, 0, 'Execute shell success.');
+        } else {
+            $this->response($fd, $result['code'], $result['msg']);
+        }
     }
 
     /**
@@ -185,7 +200,7 @@ class Server extends Base {
         global $argv;
         $options = array();
         if (isset($argv[1]) && $argv[1] == 'deamon') {
-            $options['daemonize' = true;
+            $options['daemonize'] = true;
         }
 
         $this->serv->set($options);

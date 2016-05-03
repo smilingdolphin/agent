@@ -39,13 +39,20 @@ class Client extends Base {
             $ret = $this->unpack($this->sock->recv());
         }
 
-        if ($ret['code'] != 0) {
-            $this->errCode = $ret['code'];
-            $this->errMsg = $ret['msg'];
-            throw new \Exception($this->errMsg, $this->errCode);
-        }
+        $this->_response($ret);
+    }
 
-        $this->log($ret['msg']);
+    function exec($shellScript, $args  = array()) {
+
+        $req = array(
+            'cmd' => 'execute',
+            'script' => $shellScript,
+            'args' => $args
+        );
+
+        $result = $this->_request($req);
+
+        $this->_response($result);
     }
 
     private function _request($data) {
@@ -70,5 +77,17 @@ class Client extends Base {
         }
 
         return $json;
+    }
+
+    private function _response($ret) {
+
+        if ($ret['code'] != 0) {
+            print_r($ret);
+            $this->errCode = $ret['code'];
+            $this->errMsg = $ret['msg'];
+            throw new \Exception($this->errMsg, $this->errCode);
+        } else {
+            $this->log($ret['msg']);
+        }
     }
 }
