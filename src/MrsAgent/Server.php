@@ -131,6 +131,13 @@ class Server extends Base {
             $result = json_decode($result, true);
         }
 
+        if (!$result) {
+            $result = array(
+                'code' => 505,
+                'msg' => 'Shell return illegal josn structure.',
+            );
+        }
+
         if ($result['code'] == 0) {
             $this->response($fd, 0, 'Execute shell success.');
         } else {
